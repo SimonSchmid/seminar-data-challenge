@@ -21,5 +21,14 @@
             factory-class="org.bof.HistogrammCreatorNodeFactory"
             id="org.bof.HistogrammCreatorNodeFactory"/>
    </extension>
+   <extension
+         point="org.knime.workbench.repository.nodesets">
+      <nodeset
+            default-category-icon="/icons/default.png"
+            expert-flag="false"
+            factory-class="org.bof.geometric.DescriptorNodeSetFactory"
+            id="org.bof.geometric.DescriptorNodeSetFactory">
+      </nodeset>
+   </extension>
    
 </plugin>
