@@ -119,10 +119,7 @@ public class HistogrammCreatorNodeModel extends NodeModel {
         	
         	String prePattern = currValue.substring(0, m_pattern.getStringValue().length());
         	String postPattern = currValue.substring(m_pattern.getStringValue().length());
-        	
-        	logger.info(prePattern + " -- " + postPattern);
-        	System.out.println(prePattern + " -- " + postPattern);
-        	
+        	    	
         	if (prePattern.equals(m_pattern.getStringValue()) == false) {
                 throw new InvalidSettingsException(
                         "wrong pattern specified: " 
