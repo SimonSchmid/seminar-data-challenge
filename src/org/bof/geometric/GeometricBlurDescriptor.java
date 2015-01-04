@@ -47,6 +47,20 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 		return columnHeaders;
 	}
 
+	private int[][] getSampleCoordinates( int radius ){
+		// coordinates[0][?] := x
+		// coordinates[1][?] := y
+		int[][] coordinates = new int[2][12];
+		
+		//calc coordinates for upper right corner
+		double xConerStepSize = radius/3;
+				
+		//y = Math.sqrt(Math.pow(r,2) - Math.pow(x,2));
+		
+		
+		return coordinates;
+	}
+	
 	// for each keypoint and the given input image (blurred image) extract the
 	// geometric blur descriptor
 	@Override
@@ -59,7 +73,7 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 		// the parameters with checking for name
 
 		double minSigma = 2.0d;
-		double maxSigma = 10.d;
+		double maxSigma = 10.0d;
 		int numLevels = 5;
 
 		// yeah
@@ -98,8 +112,8 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 
 			// Unfortunately we support only 2D since now. In our case we need
 			// the channel (Edge) information. We use another field in the
-			// keypoint
-			rndAccess.setPosition((int) key.octave, 2);
+			// keypoint ( octave is the channel number )
+			rndAccess.setPosition(key.octave, 2);
 
 			// now we have set the random access to the center point on or image
 			// from where it was extracted.
@@ -110,6 +124,9 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 
 			// to access the different gauss levels use
 			// rndAccess.setPosition(GAUSS LEVEL,3)
+			
+			// use rndAccess.get() (returns double because the rndAccess is specified 
+			// as double above) to access the pixel the randomAccess is pointing at
 		}
 
 		return data;
