@@ -110,7 +110,7 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 		int numLevels = 5;
 
 		// yeah
-		double stepSize = (minSigma - maxSigma) / numLevels;
+		double stepSize = (maxSigma - minSigma) / numLevels;
 
 		long[] newDims = new long[] { img.dimension(0), img.dimension(1),
 				img.dimension(2), numLevels };
