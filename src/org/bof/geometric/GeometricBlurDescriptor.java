@@ -51,12 +51,45 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 		// coordinates[0][?] := x
 		// coordinates[1][?] := y
 		int[][] coordinates = new int[2][12];
+		//int samplesPerCornerCurve = 2;
 		
-		//calc coordinates for upper right corner
+		
 		double xConerStepSize = radius/3;
-				
-		//y = Math.sqrt(Math.pow(r,2) - Math.pow(x,2));
 		
+		//sampling will start at the top of the circle clockwise		
+		//top right
+		// first sample
+		coordinates[0][0] = 0;		
+		coordinates[1][0] = radius;
+		//second sample
+		coordinates[0][1] = (int)Math.rint(xConerStepSize);		
+		coordinates[1][1] = (int)Math.rint(Math.sqrt(Math.pow(radius,2) - Math.pow(xConerStepSize,2)));//pythagoras: y = sqrt(r²-x²)
+		//third sample
+		coordinates[0][2] = (int)Math.rint(xConerStepSize*2);		
+		coordinates[1][2] = (int)Math.rint(Math.sqrt(Math.pow(radius,2) - Math.pow(xConerStepSize*2,2)));
+		//fourth sample
+		coordinates[0][3] = radius;		
+		coordinates[1][3] = 0;
+		//now we just mirror the samples
+		//bottom right
+		coordinates[0][4] = coordinates[0][2];		
+		coordinates[1][4] = -coordinates[1][2];
+		coordinates[0][5] = coordinates[0][1];		
+		coordinates[1][5] = -coordinates[1][1];
+		coordinates[0][6] = coordinates[0][0];		
+		coordinates[1][6] = -coordinates[1][0];
+		//bottom left
+		coordinates[0][7] = -coordinates[0][5];		
+		coordinates[1][7] = coordinates[1][5];
+		coordinates[0][8] = -coordinates[0][4];		
+		coordinates[1][8] = coordinates[1][4];
+		coordinates[0][9] = -coordinates[0][3];		
+		coordinates[1][9] = coordinates[1][3];
+		//top left
+		coordinates[0][10] = coordinates[0][8];		
+		coordinates[1][10] = -coordinates[1][8];
+		coordinates[0][11] = coordinates[0][7];		
+		coordinates[1][11] = -coordinates[1][7];
 		
 		return coordinates;
 	}
@@ -103,6 +136,9 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 
 		double[][] data = new double[list.size()][32];
 
+		int[][] coordinates = getSampleCoordinates(10);
+		System.out.println(coordinates);
+		
 		// example using a rectangle-sampling in the 2d plane. We use only the
 		// first keypoint here
 		final RandomAccess<DoubleType> rndAccess = tmpImg.randomAccess();
@@ -115,6 +151,8 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 			// keypoint ( octave is the channel number )
 			rndAccess.setPosition(key.octave, 2);
 
+			
+			
 			// now we have set the random access to the center point on or image
 			// from where it was extracted.
 			// you guys have to implement the function which samples around the
