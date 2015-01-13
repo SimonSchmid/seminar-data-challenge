@@ -140,22 +140,68 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 
 		double[][] data = new double[list.size()][196];
 
-		int[][] coordinates = getSampleCoordinates(10);
-		System.out.println(coordinates);
+		//int[][] coordinates = getSampleCoordinates(10);
+		//System.out.println(coordinates);
 		
-		// example using a rectangle-sampling in the 2d plane. We use only the
-		// first keypoint here
+		// position in the descriptor (column of data array)
+		int arrayCurser = 0;
+		// number of keypoint 
+		int currentKeyPoint = 0;
+		
+		// we assume that we only have one set of keypoints for an whole image instead of
+		// a set of keypoints for every edge channel
+		// we also assume that we only have four edge channels respectively we only use the
+		// first four channels
 		final RandomAccess<DoubleType> rndAccess = tmpImg.randomAccess();
 		for (final KeyPoint key : list) {
-			rndAccess.setPosition((int) key.pt.x, 0);
-			rndAccess.setPosition((int) key.pt.y, 1);
+		
+			
+			// loop channels
+			for ( int i = 0 ; i < 4 ; i++ ){
+				//set channel
+				rndAccess.setPosition(i, 2);
+				//set x position
+				rndAccess.setPosition((int) key.pt.x, 0);
+				//set y position
+				rndAccess.setPosition((int) key.pt.y, 1);
+				//set blurlvl
+				rndAccess.setPosition(0,3);
+				
+				
+				data[currentKeyPoint][arrayCurser] = rndAccess.get().get();
+				arrayCurser++;
+				
+				
+				int blurLvl = 1;
+				// sample ring patterns 
+				// we sample four rings in steps of 5 pixels(?) around the keypoint 
+				for ( int j = 5 ; j <= 20 ; j = j+5 ){
+					int[][] coordinates = getSampleCoordinates(j);
+					
+					// get the samples from the calculated coordinates
+					for ( int v = 0 ; v < coordinates[0].length ; v++ ){
+						// set blurLVL
+						rndAccess.setPosition(blurLvl,3);
+						//x						
+						rndAccess.setPosition(coordinates[0][v], 0);
+						//y						
+						rndAccess.setPosition(coordinates[1][v], 1);
+						data[currentKeyPoint][arrayCurser] = rndAccess.get().get();
+						arrayCurser++;
+					}
+					blurLvl++;
+				}
+			}
+			
+			
+			
+			
 
 			// Unfortunately we support only 2D since now. In our case we need
 			// the channel (Edge) information. We use another field in the
 			// keypoint ( octave is the channel number )
-			rndAccess.setPosition(key.octave, 2);
-
 			
+			// rndAccess.setPosition(key.octave, 2);
 			
 			// now we have set the random access to the center point on or image
 			// from where it was extracted.
@@ -169,6 +215,8 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 			
 			// use rndAccess.get() (returns double because the rndAccess is specified 
 			// as double above) to access the pixel the randomAccess is pointing at
+			
+			currentKeyPoint++;
 		}
 
 		return data;
