@@ -38,8 +38,12 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 
 	@Override
 	public String[] getColumnHeaders() {
-		// TODO: Length of descriptor. Now 32.
-		String[] columnHeaders = new String[32];
+		// we use ((4*12)+1)*#channels
+		// 4 sample rings with 12 samples per ring plus the keypoint itself
+		// and then append each edge channel. we want to go for four edge channels
+		// like in the paper
+		// therefore we get a descriptor size of: ((4 * 12) + 1) * 4 = 196
+		String[] columnHeaders = new String[196];
 		for (int i = 1; i <= columnHeaders.length; i++) {
 			columnHeaders[i - 1] = "Descriptor Value #" + i;
 		}
@@ -134,7 +138,7 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 			}
 		}
 
-		double[][] data = new double[list.size()][32];
+		double[][] data = new double[list.size()][196];
 
 		int[][] coordinates = getSampleCoordinates(10);
 		System.out.println(coordinates);
