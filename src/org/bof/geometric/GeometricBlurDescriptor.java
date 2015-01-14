@@ -2,8 +2,10 @@ package org.bof.geometric;
 
 import java.util.List;
 
+import net.imglib2.ExtendedRandomAccessibleInterval;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccess;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.gauss3.Gauss3;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
@@ -12,6 +14,8 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
+import net.imglib2.view.IntervalView;
+import net.imglib2.view.MixedTransformView;
 import net.imglib2.view.Views;
 
 import org.knime.knip.opencv.base.algorithm.AlgorithmParameter;
@@ -126,12 +130,23 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 			// Do that for each "edge filter"
 			for (int c = 0; c < img.dimension(2); c++) {
 				try {
-					Gauss3.gauss(minSigma + (l * stepSize), Views.interval(img,
+				    
+					IntervalView<T> temp1 = Views.interval(img,
 							new long[] { 0, 0, 0 }, new long[] {
-									newDims[0] - 1, newDims[1], c }), Views
-							.interval(tmpImg, new FinalInterval(new long[] { 0,
-									0, 0, 0 }, new long[] { newDims[0],
-									newDims[1], c, l })));
+							newDims[0] - 1, newDims[1] - 1, c });
+					
+					// mirror the image so theres no border
+					ExtendedRandomAccessibleInterval<T, IntervalView<T>> temp2 = Views.extendMirrorSingle(temp1);
+					
+					// add 4th dimension
+					MixedTransformView<T> currentImg = Views.addDimension(temp2);
+					
+					IntervalView<DoubleType> newImg = Views
+					.interval(tmpImg, new FinalInterval(new long[] { 0,
+							0, 0, 0 }, new long[] { newDims[0]-1,
+							newDims[1]-1, c, l }));
+					
+					Gauss3.gauss(minSigma + (l * stepSize), currentImg, newImg);
 				} catch (IncompatibleTypeException e) {
 					e.printStackTrace();
 				}
