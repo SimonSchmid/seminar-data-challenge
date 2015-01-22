@@ -131,9 +131,12 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 			for (int c = 0; c < img.dimension(2); c++) {
 				try {
 				    
+//					IntervalView<T> temp1 = Views.interval(img,
+//							new long[] { 0, 0, 0 }, new long[] {
+//							newDims[0] - 1, newDims[1] - 1, c });
 					IntervalView<T> temp1 = Views.interval(img,
 							new long[] { 0, 0, 0 }, new long[] {
-							newDims[0] - 1, newDims[1] - 1, c });
+							newDims[0] - 1, newDims[1] - 1, newDims[2] - 1 });
 					
 					// mirror the image so theres no border
 					ExtendedRandomAccessibleInterval<T, IntervalView<T>> temp2 = Views.extendMirrorSingle(temp1);
@@ -155,12 +158,11 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 
 		double[][] data = new double[list.size()][196];
 
-		//int[][] coordinates = getSampleCoordinates(10);
-		//System.out.println(coordinates);
+		int[][] coordinates1 = getSampleCoordinates(10);
+		System.out.println(coordinates1);
 		
-		// position in the descriptor (column of data array)
-		int arrayCurser = 0;
-		// number of keypoint 
+		
+		// index of current keypoint 
 		int currentKeyPoint = 0;
 		
 		// we assume that we only have one set of keypoints for an whole image instead of
@@ -170,6 +172,8 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 		final RandomAccess<DoubleType> rndAccess = tmpImg.randomAccess();
 		for (final KeyPoint key : list) {
 		
+		// position in the descriptor (column of data array)
+		int arrayCurser = 0;
 			
 			// loop channels
 			for ( int i = 0 ; i < 4 ; i++ ){
@@ -198,9 +202,9 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 						// set blurLVL
 						rndAccess.setPosition(blurLvl,3);
 						//x						
-						rndAccess.setPosition(coordinates[0][v], 0);
+						rndAccess.setPosition(coordinates[0][v] + (int)key.pt.x, 0);
 						//y						
-						rndAccess.setPosition(coordinates[1][v], 1);
+						rndAccess.setPosition(coordinates[1][v] + (int)key.pt.y, 1);
 						data[currentKeyPoint][arrayCurser] = rndAccess.get().get();
 						arrayCurser++;
 					}
