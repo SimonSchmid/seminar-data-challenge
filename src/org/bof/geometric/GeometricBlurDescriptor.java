@@ -36,8 +36,8 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 	public GeometricBlurDescriptor() {
 		super(-1, new AlgorithmParameter<>("Max Sigma", "maxsigma", "maxsigma",
 				10), new AlgorithmParameter<>("Min Sigma", "minsigma",
-				"minsigma", 2), new AlgorithmParameter<>("Num Levels",
-				"numlevels", "numlevels", 10));
+				"minsigma", 2), new AlgorithmParameter<>("Blur Levels",
+				"blurlevels", "blurlevels", 5));
 	}
 
 	@Override
@@ -59,10 +59,8 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 		// coordinates[0][?] := x
 		// coordinates[1][?] := y
 		int[][] coordinates = new int[2][12];
-		//int samplesPerCornerCurve = 2;
-		
-		
-		double xConerStepSize = radius/3;
+				
+		double xConerStepSize = radius/3.0;
 		
 		//sampling will start at the top of the circle clockwise		
 		//top right
@@ -112,21 +110,37 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 
 		// you can get the parameters with getParameters() and looping through
 		// the parameters with checking for name
+		
+		
 
 		double minSigma = 2.0d;
 		double maxSigma = 10.0d;
-		int numLevels = 5;
+		int blurLevels = 5;
+		
+//		for(AlgorithmParameter<?> param : getParameters()){
+//			if(param.getName() == "Max Sigma"){
+//				
+//			}
+//			else if(param.getName() == "Min Sigma"){
+//				
+//			}
+//			else if(param.getName() == "Blur Levels"){
+//				
+//			}
+//		}
+		
+		
 
 		// yeah
-		double stepSize = (maxSigma - minSigma) / numLevels;
+		double stepSize = (maxSigma - minSigma) / blurLevels;
 
 		long[] newDims = new long[] { img.dimension(0), img.dimension(1),
-				img.dimension(2), numLevels };
+				img.dimension(2), blurLevels };
 
 		ArrayImg<DoubleType, ?> tmpImg = new ArrayImgFactory<DoubleType>()
 				.create(newDims, new DoubleType());
 
-		for (int l = 0; l < numLevels; l++) {
+		for (int l = 0; l < blurLevels; l++) {
 			// Do that for each "edge filter"
 			for (int c = 0; c < img.dimension(2); c++) {
 				try {
@@ -158,10 +172,6 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 
 		double[][] data = new double[list.size()][196];
 
-		int[][] coordinates1 = getSampleCoordinates(10);
-		System.out.println(coordinates1);
-		
-		
 		// index of current keypoint 
 		int currentKeyPoint = 0;
 		
