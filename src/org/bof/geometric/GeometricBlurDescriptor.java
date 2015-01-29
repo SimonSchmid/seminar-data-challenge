@@ -1,6 +1,9 @@
 package org.bof.geometric;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import net.imglib2.ExtendedRandomAccessibleInterval;
 import net.imglib2.FinalInterval;
@@ -104,6 +107,7 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 	// geometric blur descriptor
 	@Override
 	public double[][] getDescriptorsForKeypoints(Img<T> img, List<KeyPoint> list) {
+		System.out.println("next");
 
 		// Create the pyramid of images here
 		// using linear sigmas
@@ -140,6 +144,7 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 		ArrayImg<DoubleType, ?> tmpImg = new ArrayImgFactory<DoubleType>()
 				.create(newDims, new DoubleType());
 
+		ExecutorService pool = Executors.newFixedThreadPool(40);
 		for (int l = 0; l < blurLevels; l++) {
 			// Do that for each "edge filter"
 			for (int c = 0; c < img.dimension(2); c++) {
@@ -148,22 +153,22 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 //					IntervalView<T> temp1 = Views.interval(img,
 //							new long[] { 0, 0, 0 }, new long[] {
 //							newDims[0] - 1, newDims[1] - 1, c });
-					IntervalView<T> temp1 = Views.interval(img,
-							new long[] { 0, 0, 0 }, new long[] {
-							newDims[0] - 1, newDims[1] - 1, newDims[2] - 1 });
+					
+					IntervalView<T> tempInput = Views.hyperSlice(img, 2, c);
 					
 					// mirror the image so theres no border
-					ExtendedRandomAccessibleInterval<T, IntervalView<T>> temp2 = Views.extendMirrorSingle(temp1);
+					ExtendedRandomAccessibleInterval<T, IntervalView<T>> inputPlane = Views.extendMirrorSingle(tempInput);
 					
 					// add 4th dimension
-					MixedTransformView<T> currentImg = Views.addDimension(temp2);
+//					MixedTransformView<T> currentImg = Views.addDimension(temp2);
 					
-					IntervalView<DoubleType> newImg = Views
-					.interval(tmpImg, new FinalInterval(new long[] { 0,
-							0, 0, 0 }, new long[] { newDims[0]-1,
-							newDims[1]-1, c, l }));
+					// Output-Plane
+					IntervalView<DoubleType> outputPlane = Views.hyperSlice(Views.hyperSlice(tmpImg, 3, l), 2, c);
 					
-					Gauss3.gauss(minSigma + (l * stepSize), currentImg, newImg);
+					double[] sigmas = new double[outputPlane.numDimensions()];
+					Arrays.fill(sigmas, minSigma + (l * stepSize));
+					
+					Gauss3.gauss(sigmas, inputPlane, outputPlane, pool);
 				} catch (IncompatibleTypeException e) {
 					e.printStackTrace();
 				}
