@@ -184,7 +184,10 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 		// a set of keypoints for every edge channel
 		// we also assume that we only have four edge channels respectively we only use the
 		// first four channels
-		final RandomAccess<DoubleType> rndAccess = tmpImg.randomAccess();
+		
+		
+		final RandomAccess<DoubleType> rndAccess = Views.extendMirrorSingle(tmpImg).randomAccess();
+				
 		for (final KeyPoint key : list) {
 		
 		// position in the descriptor (column of data array)
