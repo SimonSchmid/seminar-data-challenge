@@ -21,6 +21,9 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.MixedTransformView;
 import net.imglib2.view.Views;
 
+import org.knime.core.node.KNIMEConstants;
+import org.knime.knip.base.KNIPConstants;
+import org.knime.knip.base.ThreadPoolExecutorService;
 import org.knime.knip.opencv.base.algorithm.AlgorithmParameter;
 import org.knime.knip.opencv.base.descriptor.AbstractDescriptor;
 import org.opencv.features2d.KeyPoint;
@@ -107,7 +110,7 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 	// geometric blur descriptor
 	@Override
 	public double[][] getDescriptorsForKeypoints(Img<T> img, List<KeyPoint> list) {
-		System.out.println("next");
+		//System.out.println("next");
 
 		// Create the pyramid of images here
 		// using linear sigmas
@@ -144,7 +147,8 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 		ArrayImg<DoubleType, ?> tmpImg = new ArrayImgFactory<DoubleType>()
 				.create(newDims, new DoubleType());
 
-		ExecutorService pool = Executors.newFixedThreadPool(40);
+		ThreadPoolExecutorService pool = new ThreadPoolExecutorService(
+	            KNIMEConstants.GLOBAL_THREAD_POOL.createSubPool(KNIPConstants.THREADS_PER_NODE));
 		for (int l = 0; l < blurLevels; l++) {
 			// Do that for each "edge filter"
 			for (int c = 0; c < img.dimension(2); c++) {
