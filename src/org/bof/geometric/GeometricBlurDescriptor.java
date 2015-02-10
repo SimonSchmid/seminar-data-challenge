@@ -154,10 +154,10 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 //							new long[] { 0, 0, 0 }, new long[] {
 //							newDims[0] - 1, newDims[1] - 1, c });
 					
-					IntervalView<T> tempInput = Views.hyperSlice(img, 2, c);
+					//IntervalView<T> tempInput = Views.hyperSlice(img, 2, c);
 					
 					// mirror the image so theres no border
-					ExtendedRandomAccessibleInterval<T, IntervalView<T>> inputPlane = Views.extendMirrorSingle(tempInput);
+					ExtendedRandomAccessibleInterval<T, IntervalView<T>> inputPlane = Views.extendMirrorSingle(Views.hyperSlice(img, 2, c));
 					
 					// add 4th dimension
 //					MixedTransformView<T> currentImg = Views.addDimension(temp2);
@@ -212,7 +212,7 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 				int blurLvl = 1;
 				// sample ring patterns 
 				// we sample four rings in steps of 5 pixels(?) around the keypoint 
-				for ( int j = 5 ; j <= 20 ; j = j+5 ){
+				for ( int j = 5 ; j <= 35 ; j = j+10 ){
 					int[][] coordinates = getSampleCoordinates(j);
 					
 					// get the samples from the calculated coordinates
