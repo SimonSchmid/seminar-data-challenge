@@ -161,10 +161,15 @@ public class HistogrammCreatorNodeModel extends NodeModel {
             
             RowKey key = new RowKey("Row " + rowCurser); 
                 
-            DataCell[] cells = new DataCell[m_range.getIntValue()];
+            DataCell[] cells = new DataCell[m_range.getIntValue() + 1];
             for(int k = 0 ; k < m_range.getIntValue() ; k++){
                 cells[k] = new IntCell(histoCount[k]);
             }
+            
+            ImgPlusCell<?> imgForId = (ImgPlusCell<?>)img.get(0).getCell(colIndexImage);
+            String imgId = imgForId.getStringValue();		
+            
+            cells[m_range.getIntValue()] = new StringCell(imgId);
             DataRow row = new DefaultRow(key, cells);
             container.addRowToTable(row);
                 
@@ -237,10 +242,11 @@ public class HistogrammCreatorNodeModel extends NodeModel {
 
     
     private DataTableSpec createOutputColumnSpec() {
-    	DataColumnSpec[] allColSpecs = new DataColumnSpec[m_range.getIntValue()];
+    	DataColumnSpec[] allColSpecs = new DataColumnSpec[m_range.getIntValue() + 1];
         for(int i = 0 ; i < m_range.getIntValue() ; i++ ){
         	allColSpecs[i] = new DataColumnSpecCreator("cluster_" + i, IntCell.TYPE).createSpec();
-        }       
+        }      
+        allColSpecs[m_range.getIntValue()] = new DataColumnSpecCreator("imgToString", StringCell.TYPE).createSpec();
         DataTableSpec outputSpec = new DataTableSpec(allColSpecs);
         
         return outputSpec;
