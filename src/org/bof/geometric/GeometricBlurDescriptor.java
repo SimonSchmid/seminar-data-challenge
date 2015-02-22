@@ -66,7 +66,7 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 		// coordinates[1][?] := y
 		int[][] coordinates = new int[2][12];
 				
-		double xConerStepSize = radius/3.0;
+		double samplingAngle = 30;
 		
 		//sampling will start at the top of the circle clockwise		
 		//top right
@@ -74,11 +74,11 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 		coordinates[0][0] = 0;		
 		coordinates[1][0] = radius;
 		//second sample
-		coordinates[0][1] = (int)Math.rint(xConerStepSize);		
-		coordinates[1][1] = (int)Math.rint(Math.sqrt(Math.pow(radius,2) - Math.pow(xConerStepSize,2)));//pythagoras: y = sqrt(r²-x²)
+		coordinates[0][1] = (int)Math.rint( Math.cos((samplingAngle * 2 * Math.PI)/180) * radius );		
+		coordinates[1][1] = (int)Math.rint( Math.sin((samplingAngle * 2 * Math.PI)/180) * radius );
 		//third sample
-		coordinates[0][2] = (int)Math.rint(xConerStepSize*2);		
-		coordinates[1][2] = (int)Math.rint(Math.sqrt(Math.pow(radius,2) - Math.pow(xConerStepSize*2,2)));
+		coordinates[0][2] = (int)Math.rint( Math.cos((samplingAngle * Math.PI)/180) * radius );		
+		coordinates[1][2] = (int)Math.rint( Math.sin((samplingAngle * Math.PI)/180) * radius );
 		//fourth sample
 		coordinates[0][3] = radius;		
 		coordinates[1][3] = 0;
@@ -120,21 +120,24 @@ public class GeometricBlurDescriptor<T extends RealType<T> & NativeType<T>>
 		
 		
 
-		double minSigma = 2.0d;
-		double maxSigma = 10.0d;
-		int blurLevels = 5;
+//		double minSigma = 2.0d;
+//		double maxSigma = 10.0d;
+//		int blurLevels = 5;
+		double minSigma = 0.0;
+		double maxSigma = 0.0;
+		int blurLevels = 0;
 		
-//		for(AlgorithmParameter<?> param : getParameters()){
-//			if(param.getName() == "Max Sigma"){
-//				
-//			}
-//			else if(param.getName() == "Min Sigma"){
-//				
-//			}
-//			else if(param.getName() == "Blur Levels"){
-//				
-//			}
-//		}
+		for(AlgorithmParameter<?> param : getParameters()){
+			if(param.getName() == "Max Sigma"){
+				maxSigma = new Double(param.getValueAsString());
+			}
+			else if(param.getName() == "Min Sigma"){
+				minSigma = new Double(param.getValueAsString());
+			}
+			else if(param.getName() == "Blur Levels"){
+				blurLevels = new Integer(param.getValueAsString());
+			}
+		}
 		
 		
 
