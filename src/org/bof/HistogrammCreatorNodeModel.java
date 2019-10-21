@@ -197,16 +197,6 @@ public class HistogrammCreatorNodeModel extends NodeModel {
      * {@inheritDoc}
      */
     @Override
-    protected void reset() {
-        // TODO Code executed on reset.
-        // Models build during execute are cleared here.
-        // Also data handled in load/saveInternals will be erased here.
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
             throws InvalidSettingsException {
         
@@ -258,8 +248,6 @@ public class HistogrammCreatorNodeModel extends NodeModel {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
-
-        // TODO save user settings to the config object.        
         m_range.saveSettingsTo(settings);
         m_column.saveSettingsTo(settings);
         m_pattern.saveSettingsTo(settings);
@@ -272,10 +260,6 @@ public class HistogrammCreatorNodeModel extends NodeModel {
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-            
-        // TODO load (valid) settings from the config object.
-        // It can be safely assumed that the settings are valided by the 
-    	// method below.        
         m_range.loadSettingsFrom(settings);
         m_column.loadSettingsFrom(settings);
         m_pattern.loadSettingsFrom(settings);
@@ -287,49 +271,10 @@ public class HistogrammCreatorNodeModel extends NodeModel {
     @Override
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-            
-        // TODO check if the settings could be applied to our model
-        // e.g. if the count is in a certain range (which is ensured by the
-        // SettingsModel).
-        // Do not actually set any values of any member variables.
         m_range.validateSettings(settings);
         m_column.validateSettings(settings);
         m_pattern.validateSettings(settings);
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void loadInternals(final File internDir,
-            final ExecutionMonitor exec) throws IOException,
-            CanceledExecutionException {
-        
-        // TODO load internal data. 
-        // Everything handed to output ports is loaded automatically (data
-        // returned by the execute method, models loaded in loadModelContent,
-        // and user settings set through loadSettingsFrom - is all taken care 
-        // of). Load here only the other internals that need to be restored
-        // (e.g. data used by the views).
-
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void saveInternals(final File internDir,
-            final ExecutionMonitor exec) throws IOException,
-            CanceledExecutionException {
-       
-        // TODO save internal models. 
-        // Everything written to output ports is saved automatically (data
-        // returned by the execute method, models saved in the saveModelContent,
-        // and user settings saved through saveSettingsTo - is all taken care 
-        // of). Save here only the other internals that need to be preserved
-        // (e.g. data used by the views).
-
-    }
-
 }
 
